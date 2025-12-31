@@ -1,57 +1,44 @@
-from PIL import Image, ImageOps
+import cv2
+import mediapipe as mp
 import numpy as np
-from torchvision import transforms
-import torch
+from PIL import Image
 
-# ============================
-# Configuration
-# ============================
-IMAGE_SIZE = 224
-MEAN = [0.5, 0.5, 0.5]  # RGB
-STD = [0.5, 0.5, 0.5]
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+class HandExtractor:
+    def __init__(self, target_size=(128, 128), padding=40):
+        self.target_size = target_size
+        self.padding = padding
+        self.mp_hands = mp.solutions.hands
+        self.hands = self.mp_hands.Hands(
+            static_image_mode=True,
+            max_num_hands=1,
+            min_detection_confidence=0.5
+        )
 
-# ============================
-# Transforms
-# ============================
-train_transform = transforms.Compose([
-    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-    transforms.RandomRotation(20),
-    transforms.RandomResizedCrop(IMAGE_SIZE, scale=(0.9, 1.0)),
-    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=MEAN, std=STD)
-])
+    def process_frame(self, frame_np):
+        if frame_np is None: return None, None
+        
+        results = self.hands.process(frame_np)
 
-val_transform = transforms.Compose([
-    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=MEAN, std=STD)
-])
-
-# ============================
-# Preprocessing function
-# ============================
-def preprocess_image(image_source, mode='val'):
-    """
-    Accepts: File Path (str) OR PIL Image object.
-    Returns: Preprocessed torch.Tensor ready for model input.
-    """
-    # Load image
-    if isinstance(image_source, str):
-        img = Image.open(image_source).convert('RGB')
-    else:
-        img = image_source.convert('RGB')
-
-    # Auto-Inversion: إذا الخلفية فاتحة نقلبها
-    img_np = np.array(img)
-    if img_np.mean() > 127:
-        img = ImageOps.invert(img)
-
-    # Apply transforms
-    if mode == 'train':
-        img = train_transform(img)
-    else:
-        img = val_transform(img)
-
-    return img
+        if not results.multi_hand_landmarks:
+            return None, frame_np
+        
+        hand = results.multi_hand_landmarks[0]
+        h, w, c = frame_np.shape
+        
+        xs = [lm.x * w for lm in hand.landmark]
+        ys = [lm.y * h for lm in hand.landmark]
+        
+        x_min = int(max(0, min(xs) - self.padding))
+        y_min = int(max(0, min(ys) - self.padding))
+        x_max = int(min(w, max(xs) + self.padding))
+        y_max = int(min(h, max(ys) + self.padding))
+        
+        hand_img_np = frame_np[y_min:y_max, x_min:x_max]
+        
+        if hand_img_np.size == 0:
+            return None, frame_np
+            
+        pil_img = Image.fromarray(hand_img_np)
+        cv2.rectangle(frame_np, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+        
+        return pil_img, frame_np
