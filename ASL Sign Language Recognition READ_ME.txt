@@ -1,109 +1,44 @@
-🧠 ASL Sign Language Recognition
+ASL Sign Language Recognition
 University Deep Learning Project
+
 1- Project Description
-This project presents a Deep Learning–based system for recognizing American Sign Language (ASL) letters and words from images and video frame sequences.
-The system combines Convolutional Neural Networks (CNNs) for letter recognition with Transformer-based models for word recognition, all integrated into a simple and user-friendly Streamlit graphical interface.
+This project presents a Deep Learning–based system for recognizing American Sign Language (ASL) letters and words from images and video frame sequences. The system combines Convolutional Neural Networks (CNNs) for letter recognition with Transformer-based models for word recognition, all integrated into a simple and user-friendly Streamlit graphical interface with optional Text-to-Speech support. 
+
 2- Project Objectives
-Recognize ASL alphabet letters from single images
-Recognize ASL words from sequences of frames
-Apply modern Deep Learning techniques (CNNs and Transformers)
-Provide an intuitive and easy-to-use graphical user interface
+The main objective of this project is to recognize ASL alphabet letters from single images and ASL words from sequences of video frames. The project applies modern Deep Learning techniques using CNNs and Transformers, provides an intuitive graphical user interface, and enhances accessibility through optional audio output.
+
+
 3- System Overview
-The system consists of two main recognition pipelines:
-🔹 Letters Recognition
-Model: CNN (ResNet18)
-Input: Single image
-Output: Predicted ASL letter
-🔹 Words Recognition
-Model: CNN + Transformer Encoder
-Input: Sequence of frames
-Output: Predicted ASL word
-The application is deployed using Streamlit, allowing users to upload images or capture snapshots from a camera and receive predictions visually through the graphical interface.
+The system consists of two main recognition pipelines. The letter recognition pipeline uses a CNN based on ResNet18 to classify single input images and output the predicted ASL letter. The word recognition pipeline combines a CNN with a Transformer Encoder to process sequences of frames and output the predicted ASL word. The entire system is deployed using Streamlit, allowing users to upload images or capture camera snapshots and receive predictions both visually and audibly.
+
+
 4- Key Features
-ResNet18-based CNN for accurate letter classification
-Transformer-based architecture for word-level sequence recognition
-Robust preprocessing and data augmentation
-Complete training pipeline (Training, Validation, Testing)
-Clean and minimal Streamlit GUI
-Camera snapshot integration
-Automatic class loading using ImageFolder directory structure
+The project utilizes a ResNet18-based CNN for accurate letter classification and a Transformer-based architecture for word-level sequence recognition. It includes robust preprocessing and data augmentation techniques, a complete training pipeline covering training, validation, and testing phases, a clean and minimal Streamlit graphical interface, camera snapshot integration, Text-to-Speech output, and automatic class loading using the ImageFolder directory structure.
+
+
 5- Project Structure
+The project follows a modular directory structure where trained models are stored in the models folder, training scripts are placed in the train directory, and shared utilities such as preprocessing and model loading are organized under utils. The main application logic and graphical user interface are implemented in app.py, while dependency management and project documentation are handled through requirements.txt and README.md.
 
-project/
-├── models/
-│   ├── letters_model.pth
-│   └── words_model.pth
-├── train/
-│   ├── train_letters.py
-│   └── train_words.py
-├── utils/
-│   ├── preprocess.py
-│   └── model_loader.py
-├── app.py
-├── requirements.txt
-└── README.md
 6- Team Members & Responsibilities
-Name
-Responsibility
-Mohamed Emad Elraw
-Data preprocessing and augmentation
-Zeyad Ahraf
-CNN model architecture (Letters)
-Sarah Mahrous Mohamed
-Model training
-Shahd Ahmed Khaled
-Validation and testing
-Hana Alaa Abderhman
-Transformer model (Words recognition)
-Youssif Hisham Baiomy
-Project documentation
-Ahd Said Atia
-Camera integration
-Omar Abdelhameed
-GUI design and model integration
+Mohamed Emad Elraw – Data preprocessing and augmentation
+Zeyad Ahraf – CNN model architecture (Letters)
+Sarah Mahrous Mohamed – Model training
+Shahd Ahmed Khaled – Validation and testing
+Hana Alaa Abderhman – Transformer model (Words recognition)
+Youssif Hisham Baiomy – Text-to-Speech and project documentation
+Ahd Said Atia – Camera integration
+Omar Abdelhameed – GUI design and model integration
 Requirements
-Install the required dependencies using: 
+The required dependencies can be installed using the provided requirements file. The main libraries used in this project include Streamlit, PyTorch, Torchvision, NumPy, OpenCV, Pillow, TQDM, and pyttsx3.
 
-Bash
-pip install -r requirements.txt
-Main Libraries
-streamlit
-torch
-torchvision
-numpy
-opencv-python
-pillow
-tqdm
 7- How to Run the Project
-1️⃣ Dataset Preparation
-The dataset should follow the ImageFolder format:
+The dataset should be prepared following the ImageFolder directory structure, where each class is placed in a separate folder for training and testing. Model training is optional since pre-trained models are provided, but the training scripts can be executed if retraining is needed. After installing the required dependencies, the application can be launched using Streamlit, enabling users to upload images or capture camera snapshots and receive predictions with optional audio output.
 
-dataset/
-├── train/
-│   ├── class1/
-│   ├── class2/
-└── test/
-    ├── class1/
-    ├── class2/
-2️⃣ Model Training (Optional)
-
-Bash
-python train/train_letters.py
-python train/train_words.py
-Trained models will be saved in the models/ directory.
-3️⃣ Run the Application
-
-Bash
-streamlit run app.py
 8- Training and Evaluation Summary
-Letters Model: ResNet18, CrossEntropyLoss, Adam optimizer
-Words Model: CNN combined with Transformer Encoder
-Evaluation Metrics: Accuracy, Precision, Recall, Confusion Matrix
-Overfitting Control: Data augmentation and validation-based checkpointing
+The letter recognition model is based on ResNet18 and trained using CrossEntropyLoss with the Adam optimizer. The word recognition model combines a CNN with a Transformer Encoder. Model performance is evaluated using accuracy, precision, recall, and confusion matrices, while overfitting is controlled through data augmentation and validation-based checkpointing.
+
 9- Future Improvements
-Real-time ASL recognition from live video
-Sentence-level sign language recognition
-Expansion to larger and more diverse datasets
-Deployment as a mobile or web-based application
+Future enhancements include real-time ASL recognition from live video, sentence-level sign language recognition, expansion to larger and more diverse datasets, and deployment as a mobile or web-based application.
+
 10- Conclusion
-This project demonstrates a practical and effective application of Deep Learning, Computer Vision, and Transformer models for American Sign Language recognition, delivering accurate visual predictions through a clean and user-friendly graphical interface.
+This project demonstrates a practical and accessible application of Deep Learning, Computer Vision, and Transformer models for American Sign Language recognition. By integrating visual predictions with optional audio feedback through a user-friendly interface, the system improves accessibility and usability for a wide range of users.
