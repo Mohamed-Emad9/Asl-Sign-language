@@ -12,13 +12,13 @@ import threading
 # ==========================================
 # 1. Configuration & Constants
 # ==========================================
-st.set_page_config(page_title="ASL Master", layout="wide")
+st.set_page_config(page_title="Silent Voice",page_icon= "🤟", layout="wide")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # --- UPDATE PATHS HERE ---
-LETTERS_MODEL_PATH = r"C:\Users\afsao\Desktop\new deep shit\final_best_model.pth"
-WORDS_MODEL_PATH = r"C:\Users\afsao\Desktop\hi deep\best_vit_model.pth"
-WORDS_DATA_FOLDER = r"C:\Users\afsao\Desktop\final_data-20251227T050411Z-1-001\final_data\train"
+LETTERS_MODEL_PATH = r"D:\ASL_models\final_best_model.pth"
+WORDS_MODEL_PATH = r"D:\ASL_models\best_vit_model.pth"
+WORDS_DATA_FOLDER = r"D:\final_data\train"
 
 # ==========================================
 # 2. Session State (Crucial for Streamlit UI)
@@ -93,7 +93,6 @@ def load_letters_engine():
     except Exception as e:
         st.error(f"Error loading Letters Model: {e}")
         return None
-
 @st.cache_resource
 def load_words_engine(num_classes):
     try:
@@ -132,9 +131,8 @@ LETTERS_MAP = {
 # 5. GUI Logic
 # ==========================================
 
-st.sidebar.title("🎛️ Control Panel")
+st.sidebar.title("🎛 Control Panel")
 mode = st.sidebar.selectbox("Select Mode:", ["Letters (Alphabet)", "Words (Expressions)"])
-input_method = st.sidebar.radio("Input Method:", ["Upload Image", "Camera"])
 
 # --- Letters Sentence Controls ---
 if mode == "Letters (Alphabet)":
@@ -154,20 +152,35 @@ if mode == "Letters (Alphabet)":
         st.rerun()
 
 st.title(f"🤟 ASL Detector: {mode}")
+st.markdown(
+    """
+    <p style="
+        font-size: 15px;
+        color: #9aa0a6;
+        letter-spacing: 1px;
+        margin-top: -8px;
+        margin-bottom: 20px;
+    ">
+        "Because Silence Deserves to Be Heard"
+    </p>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # --- Image Input ---
-img_file = None
-if input_method == "Upload Image":
-    img_file = st.file_uploader("Upload Image", type=['jpg', 'png', 'jpeg'])
-else:
-    img_file = st.camera_input("Capture Image")
-
+img_file = st.file_uploader(
+    "📤 Upload Image",
+    type=['jpg', 'png', 'jpeg']
+)
+if img_file is None:
+    st.info("⬆️ Please upload an image to start detection")
 if img_file:
     col1, col2 = st.columns(2)
     original_pil = Image.open(img_file).convert("RGB")
     
     with col1:
-        st.image(original_pil, caption="Input", use_column_width=True)
+        st.image(original_pil, caption="Input", width=400)
 
     # --- Analysis Button ---
     # We use a callback or just standard flow. Here standard flow updates session state.
@@ -189,7 +202,6 @@ if img_file:
                     conf, idx = torch.max(prob, 1)
                     st.session_state.last_result = LETTERS_MAP.get(idx.item(), "Unknown")
                     st.session_state.last_confidence = conf.item()
-
             else: # Words
                 classes = get_word_classes()
                 model = load_words_engine(len(classes))
